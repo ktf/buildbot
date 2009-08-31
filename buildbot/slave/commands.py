@@ -2126,7 +2126,7 @@ class Git(SourceBase):
         return d
 
     def _didClean(self, dummy):
-        command = ['git', 'fetch', '-t', self.repourl, "%s:%s" % (self.branch, self.branch)]
+        command = ['git', 'fetch-cern', '-t', self.repourl, "%s:%s" % (self.branch, self.branch)]
         self.sendStatus({"header": "fetching branch %s from %s\n"
                                         % (self.branch, self.repourl)})
         c = ShellCommand(self.builder, command, self._fullSrcdir(),
