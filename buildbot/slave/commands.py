@@ -2094,7 +2094,7 @@ class Git(SourceBase):
         self.command = c
         return c.start()
 
-    def _didFetch(self, res):
+    def _didCheckout(self, res):
         if self.revision:
             head = self.revision
         else:
@@ -2126,7 +2126,7 @@ class Git(SourceBase):
         return d
 
     def _didClean(self, dummy):
-        command = ['git', 'fetch', '-t', self.repourl, self.branch]
+        command = ['git', 'fetch', '-t', self.repourl, "%s:%s" % (self.branch, self.branch)]
         self.sendStatus({"header": "fetching branch %s from %s\n"
                                         % (self.branch, self.repourl)})
         c = ShellCommand(self.builder, command, self._fullSrcdir(),
@@ -2140,6 +2140,15 @@ class Git(SourceBase):
 
     def _didInit(self, res):
         return self.doVCUpdate()
+    
+    def _didFetch(self, res):
+        command = ['git', 'checkout', self.branch]
+        c = ShellCommand(self.builder, command, self._fullSrcdir(),
+                         sendRC=False, timeout=self.timeout, usePTY=False)
+        d = c.start()
+        d.addCallback(self._abandonOnFailure)
+        d.addCallback(self._didCheckout)
+        return d
 
     def doVCFull(self):
         os.mkdir(self._fullSrcdir())
