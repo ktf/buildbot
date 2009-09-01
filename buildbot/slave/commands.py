@@ -2126,23 +2126,10 @@ class Git(SourceBase):
         return d
 
     def _didClean(self, dummy):
-        command = ['git', 'config-cern', 'origin']
-        self.sendStatus({"header": "configuring branch to be based at CERN.\n")
-        c = ShellCommand(self.builder, command, self._fullSrcdir(),
-                         sendRC=False, timeout=self.timeout,
-                         maxTime=self.maxTime, usePTY=False)
-        self.command = c
-        d = c.start()
-        d.addCallback(self._abandonOnFailure)
-        d.addCallback(self._didConfigure)
-        return d
-        
-
-    def _didConfigure(self, dummy):
         if self.branch == "master": 
-          command = ['git', 'fetch', '-t', self.repourl, "%s" % self.branch]
+          command = ['git', 'fetch', '--upload-pack', '/afs/cern.ch/user/e/eulisse/scratch0/local/sw/Linux-x86_64/bin/git-upload-pack', '-t', self.repourl, "%s" % self.branch]
         else:
-          command = ['git', 'fetch', '-t', self.repourl, "%s:%s" % (self.branch, self.branch)]
+          command = ['git', 'fetch', '--upload-pack', '/afs/cern.ch/user/e/eulisse/scratch0/local/sw/Linux-x86_64/bin/git-upload-pack', '-t', self.repourl, "%s:%s" % (self.branch, self.branch)]
         self.sendStatus({"header": "fetching branch %s from %s\n"
                                         % (self.branch, self.repourl)})
         c = ShellCommand(self.builder, command, self._fullSrcdir(),
