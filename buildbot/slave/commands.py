@@ -2139,7 +2139,10 @@ class Git(SourceBase):
         
 
     def _didConfigure(self, dummy):
-        command = ['git', 'fetch', '-t', self.repourl, "%s:%s" % (self.branch, self.branch)]
+        if self.branch == "master": 
+          command = ['git', 'fetch', '-t', self.repourl, "%s" % self.branch]
+        else:
+          command = ['git', 'fetch', '-t', self.repourl, "%s:%s" % (self.branch, self.branch)]
         self.sendStatus({"header": "fetching branch %s from %s\n"
                                         % (self.branch, self.repourl)})
         c = ShellCommand(self.builder, command, self._fullSrcdir(),
@@ -2148,7 +2151,10 @@ class Git(SourceBase):
         self.command = c
         d = c.start()
         d.addCallback(self._abandonOnFailure)
-        d.addCallback(self._didFetch)
+        if self.branch == "master":
+          d.addCallback(self._didFetch)
+        else:
+          d.addCallback(self._didCheckout)
         return d
 
     def _didInit(self, res):
