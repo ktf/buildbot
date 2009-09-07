@@ -2139,9 +2139,9 @@ class Git(SourceBase):
         d = c.start()
         d.addCallback(self._abandonOnFailure)
         if self.branch == "master":
-          d.addCallback(self._didFetch)
-        else:
           d.addCallback(self._didCheckout)
+        else:
+          d.addCallback(self._didFetch)
         return d
 
     def _didInit(self, res):
